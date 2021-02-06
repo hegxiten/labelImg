@@ -1,0 +1,26 @@
+<annotation>
+	<folder>China 1</folder>
+	<filename>CH1002.jpg</filename>
+	<path>C:\Users\wangz\Documents\GitHub\labelImg\data\China 1\CH1002.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>6696</width>
+		<height>4492</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>person</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1451</xmin>
+			<ymin>1726</ymin>
+			<xmax>3204</xmax>
+			<ymax>3532</ymax>
+		</bndbox>
+	</object>
+</annotation>

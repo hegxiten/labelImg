@@ -95,7 +95,7 @@ class YoloReader:
         else:
             self.classListPath = classListPath
 
-        # print (filepath, self.classListPath)
+        # print (imgFilePath, self.classListPath)
 
         classesFile = open(self.classListPath, 'r')
         self.classes = classesFile.read().strip('\n').split('\n')

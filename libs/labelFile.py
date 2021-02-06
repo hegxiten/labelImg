@@ -10,8 +10,8 @@ from base64 import b64encode, b64decode
 from libs.pascal_voc_io import PascalVocWriter
 from libs.yolo_io import YOLOWriter
 from libs.pascal_voc_io import XML_EXT
-from libs.create_ml_io import CreateMLWriter
-from libs.create_ml_io import JSON_EXT
+from libs.attributeJSONIO import AttributeJSONWriter
+from libs.attributeJSONIO import JSON_EXT
 from enum import Enum
 import os.path
 import sys
@@ -20,7 +20,7 @@ import sys
 class LabelFileFormat(Enum):
     PASCAL_VOC= 1
     YOLO = 2
-    CREATE_ML = 3
+    JSON = 3
 
 
 class LabelFileError(Exception):
@@ -30,7 +30,7 @@ class LabelFileError(Exception):
 class LabelFile(object):
     # It might be changed as window creates. By default, using XML ext
     # suffix = '.lif'
-    suffix = XML_EXT
+    suffix = JSON_EXT
 
     def __init__(self, filename=None):
         self.shapes = ()
@@ -38,7 +38,7 @@ class LabelFile(object):
         self.imageData = None
         self.verified = False
 
-    def saveCreateMLFormat(self, filename, shapes, imagePath, imageData, classList, lineColor=None, fillColor=None, databaseSrc=None):
+    def saveCreateMLFormat(self, filename, shapes, imagePath, imageData, labelList, lineColor=None, fillColor=None, databaseSrc=None):
         imgFolderPath = os.path.dirname(imagePath)
         imgFolderName = os.path.split(imgFolderPath)[-1]
         imgFileName = os.path.basename(imagePath)
@@ -49,8 +49,8 @@ class LabelFile(object):
         image.load(imagePath)
         imageShape = [image.height(), image.width(),
                       1 if image.isGrayscale() else 3]
-        writer = CreateMLWriter(imgFolderName, imgFileName,
-                                imageShape, shapes, outputFile, localimgpath=imagePath)
+        writer = AttributeJSONWriter(imgFolderName, imgFileName,
+                                     imageShape, shapes, outputFile, localimgpath=imagePath)
         writer.verified = self.verified
         writer.write()
 
@@ -119,9 +119,9 @@ class LabelFile(object):
         self.verified = not self.verified
 
     ''' ttf is disable
-    def load(self, filename):
+    def load(self, imgFilename):
         import json
-        with open(filename, 'rb') as f:
+        with open(imgFilename, 'rb') as f:
                 data = json.load(f)
                 imagePath = data['imagePath']
                 imageData = b64decode(data['imageData'])
@@ -136,9 +136,9 @@ class LabelFile(object):
                 self.lineColor = lineColor
                 self.fillColor = fillColor
 
-    def save(self, filename, shapes, imagePath, imageData, lineColor=None, fillColor=None):
+    def save(self, imgFilename, shapes, imagePath, imageData, lineColor=None, fillColor=None):
         import json
-        with open(filename, 'wb') as f:
+        with open(imgFilename, 'wb') as f:
                 json.dump(dict(
                     shapes=shapes,
                     lineColor=lineColor, fillColor=fillColor,

@@ -7,6 +7,7 @@ except ImportError:
     from PyQt4.QtCore import *
 
 from libs.utils import newIcon, labelValidator
+from libs.stringBundle import StringBundle
 
 BB = QDialogButtonBox
 

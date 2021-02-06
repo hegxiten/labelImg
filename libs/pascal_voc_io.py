@@ -51,7 +51,7 @@ class PascalVocWriter:
         folder = SubElement(top, 'folder')
         folder.text = self.foldername
 
-        filename = SubElement(top, 'filename')
+        filename = SubElement(top, 'imgFilename')
         filename.text = self.filename
 
         if self.localImgPath is not None:
@@ -152,7 +152,7 @@ class PascalVocReader:
         assert self.filepath.endswith(XML_EXT), "Unsupport file format"
         parser = etree.XMLParser(encoding=ENCODE_METHOD)
         xmltree = ElementTree.parse(self.filepath, parser=parser).getroot()
-        filename = xmltree.find('filename').text
+        filename = xmltree.find('imgFilename').text
         try:
             verified = xmltree.attrib['verified']
             if verified == 'yes':
