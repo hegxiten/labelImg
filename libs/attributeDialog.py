@@ -69,29 +69,3 @@ class AttributeDialog(QDialog):
             self.move(cursor_pos)
 
         return self.edit.text() if self.exec_() else None
-
-
-class AttributeDisabledMessageBox(QMessageBox):
-    def __init__(self, parent=None):
-        super(AttributeDisabledMessageBox, self).__init__(parent)
-        # Load string bundle for i18n
-        self.stringBundle = StringBundle.getBundle()
-        getStr = lambda strId: self.stringBundle.getString(strId)
-
-        self.setIcon(QMessageBox.Critical)
-        self.setText(getStr('disabledEditingWarning'))
-
-    def popUp(self, move=True):
-        if move:
-            cursor_pos = QCursor.pos()
-            parent_bottomRight = self.parentWidget().geometry()
-            max_x = parent_bottomRight.x() + parent_bottomRight.width() - self.sizeHint().width()
-            max_y = parent_bottomRight.y() + parent_bottomRight.height() - self.sizeHint().height()
-            max_global = self.parentWidget().mapToGlobal(QPoint(max_x, max_y))
-            if cursor_pos.x() > max_global.x():
-                cursor_pos.setX(max_global.x())
-            if cursor_pos.y() > max_global.y():
-                cursor_pos.setY(max_global.y())
-            self.move(cursor_pos)
-
-        return self.text() if self.exec_() else None
