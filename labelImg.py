@@ -34,6 +34,7 @@ from libs.settings import Settings
 from libs.stringBundle import StringBundle
 from libs.canvas import Canvas
 from libs.zoomWidget import ZoomWidget
+from libs.attributeTable import AttributeTable
 from libs.attributeDialog import AttributeDialog
 from libs.attributeFile import AttributeFile, AttributeFileError, AttributeFileFormat, ATTRIBUTE_KEYS
 from libs.toolBar import ToolBar
@@ -105,13 +106,13 @@ class MainWindow(QMainWindow, WindowMixin):
         self.attributeDialog.setGeometry(
             QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, self.attributeDialog.size(), qApp.desktop().availableGeometry())
         )
-        self.prevLabelText = ''
+        self.   prevLabelText = ''
 
         listLayout = QVBoxLayout()
         listLayout.setContentsMargins(0, 0, 0, 0)
 
         # Create and add a table widget for showing attribute key-values
-        self.attributeTableWidget = QTableWidget()
+        self.attributeTableWidget = AttributeTable()
         tableWidgetContainer = QWidget()
         tableWidgetContainer.setLayout(listLayout)
         self.attributeTableWidget.itemDoubleClicked.connect(self.editAttribute)
@@ -430,6 +431,8 @@ class MainWindow(QMainWindow, WindowMixin):
         if currIndex < len(self.mImgFileList):
             filename = self.mImgFileList[currIndex]
             if filename:
+                if self.dirty is True:
+                    self.saveFile()
                 self.loadFile(filename)
 
     # React to canvas signals.
@@ -658,6 +661,8 @@ class MainWindow(QMainWindow, WindowMixin):
             self.toggleActions(True)
             self.setWindowTitle(__appname__ + ' ' + filePath)
             self.canvas.setFocus(True)
+            self.lastOpenDir = os.path.dirname(filePath)
+            self.defaultSaveDir = self.lastOpenDir
             return True
         return False
 
@@ -710,16 +715,16 @@ class MainWindow(QMainWindow, WindowMixin):
         settings[SETTING_WIN_STATE] = self.saveState()
         settings[SETTING_RECENT_FILES] = self.recentFiles
         settings[SETTING_ADVANCE_MODE] = not self._beginner
-        if self.defaultSaveDir and os.path.exists(self.defaultSaveDir):
-            settings[SETTING_SAVE_DIR] = ustr(self.defaultSaveDir)
-        else:
-            settings[SETTING_SAVE_DIR] = ''
 
         if self.lastOpenDir and os.path.exists(self.lastOpenDir):
-            settings[SETTING_LAST_OPEN_DIR] = self.lastOpenDir
+            settings[SETTING_LAST_OPEN_DIR] = ustr(self.lastOpenDir)
         else:
-            settings[SETTING_LAST_OPEN_DIR] = ''
+            settings[SETTING_LAST_OPEN_DIR] = ustr('')
 
+        if self.defaultSaveDir and os.path.exists(self.defaultSaveDir):
+            settings[SETTING_SAVE_DIR] = ustr(self.lastOpenDir)
+        else:
+            settings[SETTING_SAVE_DIR] = ustr('')
         settings[SETTING_AUTO_SAVE] = self.autoSaving.isChecked()
         settings[SETTING_ATTRIBUTE_FILE_FORMAT] = self.attributeFileFormat
         settings.save()
@@ -803,6 +808,7 @@ class MainWindow(QMainWindow, WindowMixin):
                 self.loadFile(filename)
 
     def openNextImg(self, _value=False):
+        print("clipboard:", self.attributeTableWidget.copied_cells)
         # Proceding prev image without dialog if having any label
         if self.autoSaving.isChecked():
             if self.defaultSaveDir is not None:

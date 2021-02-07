@@ -29,7 +29,7 @@ class AttributeJSONWriter:
             print(self.jsonPath)
             with open(self.jsonPath, "r") as file:
                 input_data = file.read()
-                outputDict = json.loads(input_data)
+                outputDict = json.loads(input_data) if len(input_data) else {}
                 outputDict.update(self.attributeDict)
                 Path(self.jsonPath).write_text(json.dumps(outputDict), ENCODE_METHOD)
         else:
@@ -55,7 +55,7 @@ class AttributeJSONReader:
     def parseJSON(self):
         with open(self.jsonPath, "r") as file:
             jsonFileData = file.read()
-            loadedJSONDict = json.loads(jsonFileData)
+            loadedJSONDict = json.loads(jsonFileData) if len(jsonFileData) else {}
             # self.verified = True
 
         if loadedJSONDict.get("image", "") == self.filenameWithoutExt:
