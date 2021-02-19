@@ -11,6 +11,7 @@ from libs.stringBundle import StringBundle
 
 BB = QDialogButtonBox
 
+
 class AttributeDialog(QDialog):
 
     def __init__(self, parent=None):
@@ -26,15 +27,27 @@ class AttributeDialog(QDialog):
         self.edit.setValidator(labelValidator())
         self.edit.editingFinished.connect(self.postProcess)
 
+        self.originalText = ""
+
         layout = QVBoxLayout()
         layout.addWidget(self.edit)
         self.buttonBox = bb = BB(BB.Ok | BB.Cancel, Qt.Horizontal, self)
         bb.button(BB.Ok).setIcon(newIcon('done'))
         bb.button(BB.Cancel).setIcon(newIcon('undo'))
         bb.accepted.connect(self.validate)
-        bb.rejected.connect(self.reject)
+        bb.rejected.connect(self.restoreToOriginal)
         layout.addWidget(bb)
+
         self.setLayout(layout)
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        super(AttributeDialog, self).keyPressEvent(event)
+        if event.key() == Qt.Key_Escape:
+            self.restoreToOriginal()
+
+    def restoreToOriginal(self):
+        self.edit.setText(self.originalText)
+        self.accept()
 
     def validate(self):
         try:
@@ -53,6 +66,7 @@ class AttributeDialog(QDialog):
             self.edit.setText(self.edit.text())
 
     def popUp(self, text='', move=True):
+        self.originalText = text
         self.edit.setText(text)
         self.edit.setSelection(0, len(text))
         self.edit.setFocus(Qt.PopupFocusReason)

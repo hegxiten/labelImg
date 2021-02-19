@@ -75,6 +75,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.imageData = None
         self.attributeFile = None
         self.updatedAttributeDict = {}
+        self.clipboard = None
         # Load setting in the main thread
         self.settings = Settings()
         self.settings.load()
@@ -808,7 +809,6 @@ class MainWindow(QMainWindow, WindowMixin):
                 self.loadFile(filename)
 
     def openNextImg(self, _value=False):
-        print("clipboard:", self.attributeTableWidget.copied_cells)
         # Proceding prev image without dialog if having any label
         if self.autoSaving.isChecked():
             if self.defaultSaveDir is not None:
